@@ -1,5 +1,5 @@
 import express from 'express';
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import authRouter from './routes/auth.route.js';
 import dotenv from 'dotenv';
 dotenv.config();

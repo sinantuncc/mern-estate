@@ -1,12 +1,18 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from '../redux/user/userSlice.js';
 
 export default function SingUp() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { loading, error } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({
@@ -17,17 +23,14 @@ export default function SingUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    dispatch(signInStart());
 
     try {
       const res = await axios.post('/api/auth/signin', formData);
-      console.log(res);
+      dispatch(signInSuccess(res.data));
       navigate('/');
     } catch (err) {
-      setError(err.response.data.message);
-    } finally {
-      setLoading(false);
+      dispatch(signInFailure(err.response.data.message));
     }
   };
   return (
@@ -35,7 +38,7 @@ export default function SingUp() {
       <h1 className='font-semibold text-center text-3xl my-7'>Sign In</h1>
       <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
         <input
-          type={'text' || 'email'}
+          type='text'
           placeholder='username or email'
           className='border p-3 rounded-lg focus:outline-none'
           id='usernameOrEmail'
@@ -65,7 +68,7 @@ export default function SingUp() {
           <span className='text-blue-700'>Sign Up</span>
         </Link>
       </div>
-      {error && <p className='text-red-500'>{error}</p>}
+      {error && <p>{error}</p>}
     </div>
   );
 }

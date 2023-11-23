@@ -16,10 +16,6 @@ mongoose
 const app = express();
 app.use(express.json());
 
-app.listen(3000, () => {
-  console.log('server starting on port 3000');
-});
-
 app.use('/api/auth', authRouter);
 
 app.use((err, req, res, next) => {
@@ -31,4 +27,8 @@ app.use((err, req, res, next) => {
     statusCode,
     message,
   });
+});
+
+app.listen(3000, () => {
+  console.log('server starting on port 3000');
 });

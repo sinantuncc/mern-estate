@@ -22,7 +22,6 @@ export default function SingUp() {
 
     try {
       const res = await axios.post('/api/auth/signup', formData);
-      console.log('res: ', res);
       const { data } = res;
 
       if (data?.success === false) setError(data.message);

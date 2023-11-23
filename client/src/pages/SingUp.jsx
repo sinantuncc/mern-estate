@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function SingUp() {
   const navigate = useNavigate();
@@ -20,15 +21,10 @@ export default function SingUp() {
     setError(null);
 
     try {
-      const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await axios.post('/api/auth/signup', formData);
+      console.log('res: ', res);
+      const { data } = res;
 
-      const data = await res.json();
       if (data?.success === false) setError(data.message);
 
       navigate('/sign-in');

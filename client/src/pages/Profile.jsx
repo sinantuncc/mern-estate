@@ -1,3 +1,4 @@
 export default function Profile() {
-  return <div>Profile</div>;
+  console.log('profile running');
+  return <div className='bg-red-500'>Profile</div>;
 }

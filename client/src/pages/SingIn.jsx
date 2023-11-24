@@ -7,6 +7,7 @@ import {
   signInSuccess,
   signInFailure,
 } from '../redux/user/userSlice.js';
+import OAuth from '../components/Oauth.jsx';
 
 export default function SingUp() {
   const navigate = useNavigate();
@@ -61,6 +62,8 @@ export default function SingUp() {
         >
           {loading ? 'loading...' : 'sign in'}
         </button>
+
+        <OAuth />
       </form>
       <div className='flex gap-3 my-5'>
         <p>Have a Account?</p>
@@ -68,7 +71,6 @@ export default function SingUp() {
           <span className='text-blue-700'>Sign Up</span>
         </Link>
       </div>
-      {error && <p>{error}</p>}
     </div>
   );
 }

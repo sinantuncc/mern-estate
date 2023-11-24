@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import OAuth from '../components/Oauth';
 
 export default function SingUp() {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ export default function SingUp() {
         >
           {loading ? 'loading...' : 'sign up'}
         </button>
+        <OAuth />
       </form>
       <div className='flex gap-3 my-5'>
         <p>Have a Account?</p>

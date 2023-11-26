@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
 import {
   getDownloadURL,
@@ -7,10 +7,17 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { app } from '../firebase';
+import {
+  updateStart,
+  updateSuccess,
+  updateFailure,
+} from '../redux/user/userSlice';
+import axios from 'axios';
 
 export default function Profile() {
   const fileRef = useRef(null);
-  const { currentUser, loading } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [file, setFiles] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
@@ -18,10 +25,10 @@ export default function Profile() {
 
   /*
   firebase storage rules
-  allow read;
-  allow write: if 
-  request.resource.size < 2 * 1024 *1024 &&
-  request.resource.contentType.matches('image/.*')
+    allow read;
+    allow write: if 
+    request.resource.size < 2 * 1024 *1024 &&
+    request.resource.contentType.matches('image/.*')
   */
 
   useEffect(() => {
@@ -57,10 +64,33 @@ export default function Profile() {
     );
   };
 
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch(updateStart());
+
+    try {
+      const res = await axios.post(
+        `/api/user/update/${currentUser._id}`,
+        formData
+      );
+
+      dispatch(updateSuccess(res.data));
+      console.log('user update is successfully!');
+    } catch (err) {
+      dispatch(updateFailure(err.response.data.message));
+    }
+  };
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
-      <form className='flex flex-col gap-4'>
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
         <input
           type='file'
           ref={fileRef}
@@ -94,18 +124,23 @@ export default function Profile() {
           id='username'
           placeholder='username'
           className='border p-3 rounded-lg focus:outline-none'
+          defaultValue={currentUser.username}
+          onChange={handleChange}
         />
         <input
           type='email'
           id='email'
           placeholder='email'
           className='border p-3 rounded-lg focus:outline-none'
+          defaultValue={currentUser.email}
+          onChange={handleChange}
         />
         <input
           type='password'
           id='password'
           placeholder='password'
           className='border p-3 rounded-lg focus:outline-none'
+          onChange={handleChange}
         />
         <button
           type='submit'
@@ -129,6 +164,7 @@ export default function Profile() {
           Sign Out
         </button>
       </div>
+      <p>{error && <span className='text-red-700'>{error}</span>}</p>
     </div>
   );
 }

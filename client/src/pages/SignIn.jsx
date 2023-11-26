@@ -1,13 +1,19 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import OAuth from '../components/Oauth';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from '../redux/user/userSlice.js';
+import OAuth from '../components/OAuth.jsx';
 
-export default function SingUp() {
+export default function SignIn() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { loading, error } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({
@@ -18,42 +24,29 @@ export default function SingUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    dispatch(signInStart());
 
     try {
-      const res = await axios.post('/api/auth/signup', formData);
-      const { data } = res;
-
-      if (data?.success === false) setError(data.message);
-
-      navigate('/sign-in');
+      const res = await axios.post('/api/auth/signin', formData);
+      dispatch(signInSuccess(res.data));
+      navigate('/');
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      dispatch(signInFailure(err.response.data.message));
     }
   };
   return (
     <div className='max-w-lg mx-auto p-3'>
-      <h1 className='font-semibold text-center text-3xl my-7'>Sign Up</h1>
+      <h1 className='font-semibold text-center text-3xl my-7'>Sign In</h1>
       <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
         <input
           type='text'
-          placeholder='username'
+          placeholder='username or email'
           className='border p-3 rounded-lg focus:outline-none'
-          id='username'
+          id='usernameOrEmail'
           onChange={handleChange}
           required
         />
-        <input
-          type='email'
-          placeholder='email'
-          className='border p-3 rounded-lg focus:outline-none'
-          id='email'
-          onChange={handleChange}
-          required
-        />
+
         <input
           type='password'
           placeholder='password'
@@ -67,14 +60,15 @@ export default function SingUp() {
           className='bg-slate-700 p-3 uppercase text-white rounded-lg hover:opacity-95 disabled:opacity-80'
           disabled={loading}
         >
-          {loading ? 'loading...' : 'sign up'}
+          {loading ? 'loading...' : 'sign in'}
         </button>
+
         <OAuth />
       </form>
       <div className='flex gap-3 my-5'>
         <p>Have a Account?</p>
-        <Link to={'/sign-in'}>
-          <span className='text-blue-700'>Sign In</span>
+        <Link to={'/sign-up'}>
+          <span className='text-blue-700'>Sign Up</span>
         </Link>
       </div>
     </div>

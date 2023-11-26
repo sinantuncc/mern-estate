@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   getDownloadURL,
   getStorage,
@@ -172,11 +173,17 @@ export default function Profile() {
           onChange={handleChange}
         />
         <button
-          type='submit'
           className='bg-slate-700 p-3 uppercase text-white rounded-lg hover:opacity-95 disabled:opacity-80'
           disabled={loading}
         >
           {loading ? 'loading...' : 'update'}
+        </button>
+
+        <button
+          type='button'
+          className='bg-green-700 p-3 uppercase text-white rounded-lg hover:opacity-95 disabled:opacity-80'
+        >
+          <Link to={'/create-listing'}>create listing</Link>
         </button>
       </form>
       <div className='flex flex-col justify-between my-4 gap-3 sm:flex-row'>

@@ -14,6 +14,9 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
+  signInFailure,
+  signInStart,
+  signInSuccess,
 } from '../redux/user/userSlice';
 import axios from 'axios';
 
@@ -102,6 +105,17 @@ export default function Profile() {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      dispatch(signInStart());
+      const res = await axios.get('api/auth/signout');
+      dispatch(signInSuccess());
+      console.log(res.data);
+    } catch (err) {
+      dispatch(signInFailure(err.response.data));
+    }
+  };
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -175,6 +189,7 @@ export default function Profile() {
         </button>
         <button
           type='button'
+          onClick={handleSignOut}
           className='bg-red-500 p-2 text-white rounded-lg hover:opacity-95 disabled:opacity-80 flex-1'
         >
           Sign Out
